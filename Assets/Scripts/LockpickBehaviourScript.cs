@@ -20,6 +20,14 @@ public class LockpickBehaviourScript : MonoBehaviour
 
     private Quaternion startingOrientation;
 
+    [SerializeField]
+    private AudioSource SlidingSound;
+
+    [SerializeField]
+    private bool Movable = false;
+
+    private int ActiveTumbler = -1;
+
 
     private void Awake()
     {
@@ -38,10 +46,7 @@ public class LockpickBehaviourScript : MonoBehaviour
 
     void OnPickLock(InputValue pressed)
     {
-        //if (pressed.isPressed)
-        //{
-        //    Debug.Log();
-        //}
+        if (!Movable) return;
 
         //Debug.Log(pressed.isPressed);
         IsPickPressed = pressed.isPressed;
@@ -51,32 +56,39 @@ public class LockpickBehaviourScript : MonoBehaviour
 
             if (pickLocation > MinXPosition && pickLocation < MinXPosition + 2.0f)
             {
+                ActiveTumbler = 0;
                 Tumblers[0].pressed = true;
+                SlidingSound.Play();
             }
             else if (pickLocation > MinXPosition + 4.0f && pickLocation < MinXPosition + 6.0f)
             {
+                ActiveTumbler = 1;
                 Tumblers[1].pressed = true;
+                SlidingSound.Play();
             }
             else if (pickLocation > MinXPosition + 8.0f && pickLocation < MinXPosition + 10.0f)
             {
+                ActiveTumbler = 2;
                 Tumblers[2].pressed = true;
+                SlidingSound.Play();
             }
             else if (pickLocation > MinXPosition + 12.0f && pickLocation < MinXPosition + 14.0f)
             {
+                ActiveTumbler = 3;
                 Tumblers[3].pressed = true;
+                SlidingSound.Play();
             }
             else if (pickLocation > MinXPosition + 16.0f && pickLocation < MinXPosition + 18.0f)
             {
+                ActiveTumbler = 4;
                 Tumblers[4].pressed = true;
+                SlidingSound.Play();
             }
         }
         else
         {
-            foreach (TumblerBehaviour tumbler in Tumblers)
-            {
-                tumbler.RepositionTumbler();
-                transform.rotation = startingOrientation;
-            }
+            ResetPickPosition();
+            ActiveTumbler = -1; 
         }
     }
 
@@ -98,4 +110,36 @@ public class LockpickBehaviourScript : MonoBehaviour
             transform.position = new Vector3(MaxXPosition + 1, transform.position.y, transform.position.z);
         }
     }
+
+    private void ResetPickPosition()
+    {
+        if (ActiveTumbler >= 0)
+        {
+
+        Tumblers[ActiveTumbler].RepositionTumbler();
+        }
+        SlidingSound.Stop();
+        transform.rotation = startingOrientation;
+        IsPickPressed = false;
+    }
+
+    public void DisableLockpick()
+    {
+        Movable = false;
+        ResetPickPosition();
+    }
+
+    public void EnableLockpick()
+    {
+        Movable = true;
+        foreach (TumblerBehaviour tumbler in Tumblers)
+        {
+            tumbler.ResetTumbler();
+        }
+        ResetPickPosition();
+    }
+
+    
+
+
 }

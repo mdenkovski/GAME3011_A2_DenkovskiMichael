@@ -32,6 +32,12 @@ public class DifficultyManager : MonoBehaviour
     [Range(0.0f, 0.95f)]
     private float HardSensitivity = 0.75f;
 
+    [SerializeField]
+    private TimerManager Timer;
+    [SerializeField]
+    private float MaxTimePerRound = 15;
+
+
     private void OnEnable()
     {
         SetDifficulty(Difficulty.Easy);
@@ -62,6 +68,9 @@ public class DifficultyManager : MonoBehaviour
             default:
                 break;
         }
+
+        Timer.MaxTime = MaxTimePerRound;
+        Timer.ResetTimer();
 
         UpdateDifficultyText();
 

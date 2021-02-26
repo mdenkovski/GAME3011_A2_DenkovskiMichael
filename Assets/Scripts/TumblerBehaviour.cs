@@ -34,12 +34,26 @@ public class TumblerBehaviour : MonoBehaviour
     private float GoalYEnd;
     private float StopPosition;
 
+
+
+    //[SerializeField]
+    private AudioSource JinglingSound;
+    private bool IsJinglePlaying;
+
+    [SerializeField]
+    private TimerManager Timer;
+
     private void Awake()
     {
         startPosition = transform.position;
     }
 
-    
+    private void Start()
+    {
+        JinglingSound = GetComponent<AudioSource>();
+    }
+
+
 
     private void OnDisable()
     {
@@ -62,6 +76,12 @@ public class TumblerBehaviour : MonoBehaviour
         {
             float shakeDirection = -1 + Mathf.PingPong(Time.time * Shakeintensity, 2);
             transform.position = new Vector3(startPosition.x + (HorizontalShakeAmount * shakeDirection), transform.position.y, transform.position.z);
+
+            if (!IsJinglePlaying)
+            {
+                JinglingSound.Play();
+                IsJinglePlaying = true;
+            }
         }
 
         //limit how far down the tumbler can move based on the stop point. 
@@ -79,11 +99,16 @@ public class TumblerBehaviour : MonoBehaviour
         {
             IsLocked = true;
             transform.position = new Vector3(startPosition.x, transform.position.y, transform.position.z);
+            Timer.TumblerCorrect();
         }
         else
         {
             transform.position = startPosition;
+            
         }
+
+        JinglingSound.Stop();
+        IsJinglePlaying = false;    
 
     }
 
@@ -106,7 +131,7 @@ public class TumblerBehaviour : MonoBehaviour
         ResetTumbler();
     }
 
-    private void ResetTumbler()
+    public void ResetTumbler()
     {
         IsLocked = false;
         transform.position = startPosition;
